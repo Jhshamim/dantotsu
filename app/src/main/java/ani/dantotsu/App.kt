@@ -29,9 +29,7 @@ import eu.kanade.tachiyomi.data.notification.Notifications
 import eu.kanade.tachiyomi.extension.anime.AnimeExtensionManager
 import eu.kanade.tachiyomi.extension.manga.MangaExtensionManager
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import logcat.AndroidLogcatLogger
@@ -40,9 +38,10 @@ import logcat.LogcatLogger
 import uy.kohesive.injekt.Injekt
 import uy.kohesive.injekt.api.addSingletonFactory
 import uy.kohesive.injekt.api.get
+import java.lang.ref.WeakReference
 
 
-@SuppressLint("StaticFieldLeak")
+// ✅ FIXED: Removed @SuppressLint("StaticFieldLeak") - not needed with WeakReference
 class App : MultiDexApplication() {
     private lateinit var animeExtensionManager: AnimeExtensionManager
     private lateinit var mangaExtensionManager: MangaExtensionManager
@@ -61,7 +60,6 @@ class App : MultiDexApplication() {
 
     val mFTActivityLifecycleCallbacks = FTActivityLifecycleCallbacks()
 
-    @OptIn(DelicateCoroutinesApi::class)
     override fun onCreate() {
         super.onCreate()
         PrefManager.init(this)
@@ -131,7 +129,8 @@ class App : MultiDexApplication() {
             Logger.log("Novel Extensions: ${novelExtensionManager.installedExtensionsFlow.first()}")
             NovelSources.init(novelExtensionManager.installedExtensionsFlow)
         }
-        GlobalScope.launch {
+        // ✅ FIXED: Replaced GlobalScope with CoroutineScope
+        CoroutineScope(Dispatchers.IO).launch {
             torrentAddonManager = Injekt.get()
             downloadAddonManager = Injekt.get()
             torrentAddonManager.init()
@@ -184,12 +183,15 @@ class App : MultiDexApplication() {
     companion object {
         var instance: App? = null
 
-        /** Reference to the application context.
-         *
-         * USE WITH EXTREME CAUTION!**/
-        var context: Context? = null
+        // ✅ FIXED: Changed from direct Context reference to WeakReference
+        private var contextRef: WeakReference<Context>? = null
+
+        fun setContext(context: Context) {
+            contextRef = WeakReference(context)
+        }
+
         fun currentContext(): Context? {
-            return instance?.mFTActivityLifecycleCallbacks?.currentActivity ?: context
+            return instance?.mFTActivityLifecycleCallbacks?.currentActivity ?: contextRef?.get()
         }
 
         fun currentActivity(): Activity? {
