@@ -1,7 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <lint>
-  <issue id="InlinedApi" severity="error" />
-  <issue id="NewApi" severity="error" />
-  <issue id="SetTextI18n" severity="error" />
-  <issue id="HardcodedText" severity="error" />
+    <!-- API Issues -->
+    <issue id="InlinedApi" severity="error" />
+    <issue id="NewApi" severity="error" />
+    <issue id="SetTextI18n" severity="error" />
+    <issue id="HardcodedText" severity="error" />
+    
+    <!-- Memory and Performance -->
+    <issue id="StaticFieldLeak" severity="error" />
+    <issue id="DiscouragedApi" severity="warning" />
+    <issue id="MissingDimensionResource" severity="error" />
+    
+    <!-- Security -->
+    <issue id="AllowBackup" severity="warning" />
+    <issue id="UsesCleartextTraffic" severity="error" />
+    <issue id="MissingPermission" severity="error" />
+    
+    <!-- Build -->
+    <issue id="MissingVersion" severity="warning" />
+    <issue id="GradleCompatible" severity="warning" />
+    
+    <!-- Deprecated -->
+    <issue id="Deprecated" severity="warning" />
+    
+    <!-- Debug -->
+    <issue id="HardcodedDebugMode" severity="error" />
+    
+    <!-- Manifest -->
+    <issue id="MissingExportedService" severity="error" />
+    <issue id="MissingExportedProvider" severity="error" />
+    <issue id="MissingExportedContentProvider" severity="error" />
 </lint>
